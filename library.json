@@ -1,0 +1,30 @@
+{
+  "name": "Arduino-MX25xxxYY",
+  "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jcu-eresearch/Arduino-MX25xxxYY.git"
+  },
+  "keywords": [
+    "flash"
+  ],
+  "authors": [
+    {
+      "name": "NigelB"
+    }
+  ],
+  "frameworks": [
+    "arduino"
+  ],
+
+  "license": "GPL-3.0",
+  "build": {
+    "libArchive": false,
+    "srcFilter": [
+      "+<*.cpp>",
+      "+<*.h>",
+      "+<MX25xxxYY/*.c>",
+      "+<MX25xxxYY/*.h>"
+    ]
+  }
+}
