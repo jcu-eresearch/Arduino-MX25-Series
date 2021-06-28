@@ -25,7 +25,7 @@
 #define ARGOSTAG_ARDUINOMX25XXXYY_H
 
 #include "SPI.h"
-#include "MX25xxxYY/MX25xxxYY.h"
+#include "MX25xxxYY.h"
 
 #ifndef ArduinoMX25xxxYY_DEBUG_UART_TYPE
 #define ArduinoMX25xxxYY_DEBUG_UART_TYPE UART

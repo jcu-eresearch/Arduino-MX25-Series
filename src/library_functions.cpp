@@ -20,14 +20,20 @@
  *
  */
 
-#include "MX25xxxYY/MX25xxxYY.h"
+#include "MX25xxxYY.h"
 #include "ArduinoMX25xxxYY.h"
 #include "Arduino.h"
 #include "SPI.h"
 
 bool MX25xxxYY___test_linker(MX25xxxYY_t *dev)
 {
-    Serial.println("Linked Libs");
+    ArduinoMX25xxxYY *flash = nullptr;
+    if(dev->ctx != nullptr) {
+        flash = static_cast<ArduinoMX25xxxYY *>(dev->ctx);
+        flash->println("MX25xxxYY___test_linker: Successfully Linked Libs.");
+        flash->println();
+    }
+
     return true;
 }
 
@@ -38,10 +44,10 @@ MX25xxxYY_status_enum_t MX25xxxYY___issue_command(MX25xxxYY_t *dev, MX25xxxYY_CO
     if(dev->ctx != nullptr) {
         flash = static_cast<ArduinoMX25xxxYY *>(dev->ctx);
         flash->printf("MX25xxxYY_COMMAND: %02x:  ", command);
+        flash->println();
     }
 
     SPI.transfer(command);
-    Serial.println();
     return MX25xxxYY_status_not_reported;
 }
 
@@ -63,7 +69,9 @@ MX25xxxYY_status_enum_t MX25xxxYY___read(MX25xxxYY_t *dev, size_t length, uint8_
             flash->printf(", ");
         }
     }
-    Serial.println();
+    if (flash != nullptr){
+        flash->println();
+    }
     dev->state = 2;
     return MX25xxxYY_status_not_reported;
 }
