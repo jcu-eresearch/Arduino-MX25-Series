@@ -1,5 +1,5 @@
 /*
- * Arduino-MX25Series is an Arduino Library for the Macronix MX25R6435F flash chip.
+ * Arduino-MX25Series is an Arduino Library for the Macronix MX25-Series flash chips.
  * It is a wrapper for the c-MX25Series library.
  * Copyright (C) 2021  eResearch, James Cook University
  * Author: NigelB
