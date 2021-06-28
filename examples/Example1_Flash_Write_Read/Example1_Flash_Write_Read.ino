@@ -54,7 +54,7 @@ void setup()
     Serial.begin(115200);
     SPISettings _spi_settings(FLASH_SPI_CLOCK_SPEED, MSBFIRST, SPI_MODE0);
     SPI.beginTransaction(_spi_settings);
-    flash.setDebugStream(&Serial); //Remove this line to disable ArduinoMX25xxxYY DEBUG output.
+    flash.setDebugStream(&Serial); //Remove this line to disable ArduinoMX25Series DEBUG output.
 
 //
     MX25xxxYY_Chip_Info_t *chip_def = &MX25R6435F_Chip_Def_Low_Power;
