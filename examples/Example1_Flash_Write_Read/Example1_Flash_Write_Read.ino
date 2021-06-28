@@ -1,5 +1,5 @@
 /*
- * Arduino-MX25xxxYY is an Arduino Library for the Macronix MX25R6435F flash chip.
+ * Arduino-MX25Series is an Arduino Library for the Macronix MX25R6435F flash chip.
  * Copyright (C) 2021 eResearch, James Cook University
  * Author: NigelB
  *
@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
- * Repository: https://github.com/jcu-eresearch/Arduino-MX25xxxYY
+ * Repository: https://github.com/jcu-eresearch/Arduino-MX25Series
  *
  */
 
@@ -33,8 +33,8 @@
  * can be switched on and off with the FLASH_POWER_PIN
  */
 
-#include "MX25xxxYY.h"
-#include "ArduinoMX25xxxYY.h"
+#include "MX25Series.h"
+#include "ArduinoMX25Series.h"
 
 #define FLASH_RESET_PIN 27
 #define FLASH_CS_PIN 28
@@ -42,7 +42,7 @@
 
 #define FLASH_SPI_CLOCK_SPEED 4000000
 
-ArduinoMX25xxxYY flash;
+ArduinoMX25Series flash;
 
 void hex_dump(size_t length, uint8_t *buf);
 void clearBuf();
@@ -57,7 +57,7 @@ void setup()
     flash.setDebugStream(&Serial); //Remove this line to disable ArduinoMX25Series DEBUG output.
 
 //
-    MX25xxxYY_Chip_Info_t *chip_def = &MX25R6435F_Chip_Def_Low_Power;
+    MX25Series_Chip_Info_t *chip_def = &MX25R6435F_Chip_Def_Low_Power;
     bool found_flash = flash.begin(chip_def, FLASH_CS_PIN, FLASH_RESET_PIN, FLASH_WP_PIN, &SPI);
     if(found_flash)
     {
@@ -68,9 +68,9 @@ void setup()
         memset(buffer, 0, sizeof(buffer));
 
         Serial.println("Reading first Page...");
-        ArduinoMX25xxxYY_status status = flash.readFlashMemory(0, sizeof(buffer), buffer);
+        ArduinoMX25Series_status status = flash.readFlashMemory(0, sizeof(buffer), buffer);
 
-        if(MX25xxxYY_HAS_ERROR(status))
+        if(MX25Series_HAS_ERROR(status))
         {
             Serial.println("Error reading data from Flash!");
             return;
@@ -94,7 +94,7 @@ void setup()
 
         status = flash.writeFlashMemory(0, sizeof(buffer), buffer);
 
-        if(MX25xxxYY_HAS_ERROR(status))
+        if(MX25Series_HAS_ERROR(status))
         {
             Serial.println("Error reading data from Flash!");
             return;
@@ -108,7 +108,7 @@ void setup()
         memset(buffer, 0, sizeof(buffer));
         status = flash.readFlashMemory(0, sizeof(buffer), buffer);
 
-        if(MX25xxxYY_HAS_ERROR(status))
+        if(MX25Series_HAS_ERROR(status))
         {
             Serial.println("Error writing data to Flash!");
             return;
@@ -123,9 +123,9 @@ void setup()
         while(!Serial.available()){}
         clearBuf();
 
-        status = flash.eraseFlashMemory(0, MX25xxxYY_Erase_Block_4K);
+        status = flash.eraseFlashMemory(0, MX25Series_Erase_Block_4K);
 
-        if(MX25xxxYY_HAS_ERROR(status))
+        if(MX25Series_HAS_ERROR(status))
         {
             Serial.println("Error erasing Flash!");
             return;
@@ -139,7 +139,7 @@ void setup()
         Serial.println("Reading first Page...");
         status = flash.readFlashMemory(0, sizeof(buffer), buffer);
 
-        if(MX25xxxYY_HAS_ERROR(status))
+        if(MX25Series_HAS_ERROR(status))
         {
             Serial.println("Error writing data to Flash!");
             return;
