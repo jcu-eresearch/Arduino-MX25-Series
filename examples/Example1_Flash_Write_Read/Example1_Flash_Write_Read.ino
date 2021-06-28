@@ -33,15 +33,13 @@
  * can be switched on and off with the FLASH_POWER_PIN
  */
 
+#include "MX25xxxYY.h"
 #include "ArduinoMX25xxxYY.h"
 
 #define FLASH_RESET_PIN 27
 #define FLASH_CS_PIN 28
 #define FLASH_WP_PIN 4
 
-#define FLASH_POWER_PIN 23
-//The number of milli-seconds it takes for the flash chip to stabilize after power on.
-#define FLASH_POWER_ON_DELAY 20
 #define FLASH_SPI_CLOCK_SPEED 4000000
 
 ArduinoMX25xxxYY flash;
@@ -54,25 +52,19 @@ void setup()
 {
 //  Configure Hardware
     Serial.begin(115200);
-
     SPISettings _spi_settings(FLASH_SPI_CLOCK_SPEED, MSBFIRST, SPI_MODE0);
     SPI.beginTransaction(_spi_settings);
+    flash.setDebugStream(&Serial); //Remove this line to disable ArduinoMX25xxxYY DEBUG output.
 
-    Serial.println(MX25xxxYY_SR_WIP_GET_VALUE(3) == true);
-
-    //Configure Flash power pin and initialize
-    //The rest of the pins are configured by the call to flash.begin
-    pinMode(FLASH_POWER_PIN, OUTPUT);
-    digitalWrite(FLASH_POWER_PIN, HIGH);
-    delay(FLASH_POWER_ON_DELAY);
-
-    bool found_flash = flash.begin(FLASH_CS_PIN, FLASH_RESET_PIN, FLASH_WP_PIN, &SPI);
+//
+    MX25xxxYY_Chip_Info_t *chip_def = &MX25R6435F_Chip_Def_Low_Power;
+    bool found_flash = flash.begin(chip_def, FLASH_CS_PIN, FLASH_RESET_PIN, FLASH_WP_PIN, &SPI);
     if(found_flash)
     {
 
         Serial.println("Chip found!....");
 
-        uint8_t buffer[MX25xxxYY_PAGE_SIZE];
+        uint8_t buffer[chip_def->page_size];
         memset(buffer, 0, sizeof(buffer));
 
         Serial.println("Reading first Page...");
@@ -163,7 +155,6 @@ void setup()
         Serial.println("Error! Could not find MX25R6435F chip.");
     }
     Serial.println("Powering chip off...");
-    digitalWrite(FLASH_POWER_PIN, HIGH);
 }
 
 
