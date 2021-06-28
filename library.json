@@ -1,9 +1,10 @@
 {
-  "name": "Arduino-MX25xxxYY",
+  "name": "Arduino-MX25-Series",
   "version": "0.0.1",
+  "description": "A Arduino library to drive the Macronix MX25-Series Flash Chips.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jcu-eresearch/Arduino-MX25xxxYY.git"
+    "url": "https://github.com/jcu-eresearch/Arduino-MX25-Series.git"
   },
   "keywords": [
     "flash"
@@ -16,15 +17,15 @@
   "frameworks": [
     "arduino"
   ],
-
+  "dependencies": {
+    "nigelb/c-MX25-Series": "*"
+  },
   "license": "GPL-3.0",
   "build": {
     "libArchive": false,
     "srcFilter": [
       "+<*.cpp>",
-      "+<*.h>",
-      "+<MX25xxxYY/*.c>",
-      "+<MX25xxxYY/*.h>"
+      "+<*.h>"
     ]
   }
 }
