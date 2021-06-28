@@ -51,7 +51,8 @@ public:
     /**
      * begin initializes the ArduinoMX25xxxYY object. It configures the specified pins as OUTPUT and sets their values
      * to the required defaults. It also reads the IDs from the flash chip and ensures that they match those in the
-     * specified chip_def.
+     * specified chip_def. begin also ensure that the MX25xxxYY___test_linker function returns true; ensuring that the
+     * ArduinoMX25xxxYY library is properly linked with the c-MX25xxxYY library.
      * @param chip_def the populated MX25xxxYY_Chip_Info_t that matches the attached Flash Chip.
      * @param cs_pin the pin to use for the CS signal
      * @param reset_pin the pin to use for the RESET signal

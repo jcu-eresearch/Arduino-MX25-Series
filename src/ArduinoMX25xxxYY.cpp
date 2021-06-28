@@ -27,6 +27,7 @@ bool ArduinoMX25xxxYY::begin(MX25xxxYY_Chip_Info_t *chip_def, uint8_t cs_pin, ui
 {
     if(!MX25xxxYY___test_linker(&dev))
     {
+        this->println("MX25xxxYY___test_linker returned FALSE. Linking the library has not been done correctly.");
         return false;
     }
     //Configure The Pins
