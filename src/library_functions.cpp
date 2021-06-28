@@ -21,6 +21,7 @@
  */
 
 #include "MX25xxxYY/MX25xxxYY.h"
+#include "ArduinoMX25xxxYY.h"
 #include "Arduino.h"
 #include "SPI.h"
 
@@ -33,7 +34,12 @@ bool MX25xxxYY___test_linker(MX25xxxYY_t *dev)
 // cppcheck-suppress unusedFunction
 MX25xxxYY_status_enum_t MX25xxxYY___issue_command(MX25xxxYY_t *dev, MX25xxxYY_COMMAND_enum_t command)
 {
-    Serial.printf("MX25xxxYY_COMMAND: %02x:  ", command);
+    ArduinoMX25xxxYY *flash = nullptr;
+    if(dev->ctx != nullptr) {
+        flash = static_cast<ArduinoMX25xxxYY *>(dev->ctx);
+        flash->printf("MX25xxxYY_COMMAND: %02x:  ", command);
+    }
+
     SPI.transfer(command);
     Serial.println();
     return MX25xxxYY_status_not_reported;
@@ -42,13 +48,20 @@ MX25xxxYY_status_enum_t MX25xxxYY___issue_command(MX25xxxYY_t *dev, MX25xxxYY_CO
 // cppcheck-suppress unusedFunction
 MX25xxxYY_status_enum_t MX25xxxYY___read(MX25xxxYY_t *dev, size_t length, uint8_t* buffer)
 {
-    Serial.println();
-    Serial.print("SPI<< ");
+    ArduinoMX25xxxYY *flash = nullptr;
+    if(dev->ctx != nullptr) {
+        flash = static_cast<ArduinoMX25xxxYY *>(dev->ctx);
+        flash->println();
+        flash->printf("SPI<< ");
+    }
+
     for (size_t i = 0; i < length; i++)
     {
         buffer[i] = SPI.transfer(dev->transfer_dummy_byte);
-        Serial.print(buffer[i], HEX);
-        Serial.print(", ");
+        if (flash != nullptr){
+            flash->print(buffer[i], HEX);
+            flash->printf(", ");
+        }
     }
     Serial.println();
     dev->state = 2;
@@ -58,15 +71,22 @@ MX25xxxYY_status_enum_t MX25xxxYY___read(MX25xxxYY_t *dev, size_t length, uint8_
 // cppcheck-suppress unusedFunction
 MX25xxxYY_status_enum_t MX25xxxYY___write(MX25xxxYY_t *dev, size_t length, uint8_t* buffer)
 {
-    Serial.println();
-    Serial.print("SPI>> ");
+    ArduinoMX25xxxYY *flash = nullptr;
+    if(dev->ctx != nullptr) {
+        flash = static_cast<ArduinoMX25xxxYY *>(dev->ctx);
+        flash->println();
+        flash->printf("SPI>> ");
+    }
+
     for (size_t i = 0; i < length; i++)
     {
         SPI.transfer(buffer[i]);
-        Serial.print(buffer[i], HEX);
-        Serial.print(", ");
+        if (flash != nullptr){
+            flash->print(buffer[i], HEX);
+            flash->printf(", ");
+        }
     }
-    Serial.println();
+    if (flash != nullptr){flash->println();}
     dev->state = 3;
     return MX25xxxYY_status_not_reported;
 }
@@ -74,18 +94,32 @@ MX25xxxYY_status_enum_t MX25xxxYY___write(MX25xxxYY_t *dev, size_t length, uint8
 // cppcheck-suppress unusedFunction
 void MX25xxxYY___enable_cs_pin(MX25xxxYY_t *dev, bool value)
 {
-    Serial.printf("CS: Pin:%i, %s\r\n", dev->cs_pin, value?"LOW":"HIGH");
+    ArduinoMX25xxxYY *flash = nullptr;
+    if(dev->ctx != nullptr) {
+        flash = static_cast<ArduinoMX25xxxYY *>(dev->ctx);
+        flash->printf("CS: Pin:%i, %s\r\n", dev->cs_pin, value ? "LOW" : "HIGH");
+    }
     digitalWrite(dev->cs_pin, !value);
 }
 
 // cppcheck-suppress unusedFunction
 void MX25xxxYY___enable_reset_pin(MX25xxxYY_t *dev, bool value)
 {
+    ArduinoMX25xxxYY *flash = nullptr;
+    if(dev->ctx != nullptr) {
+        flash = static_cast<ArduinoMX25xxxYY *>(dev->ctx);
+        flash->printf("Reset: Pin:%i, %s\r\n", dev->cs_pin, value ? "LOW" : "HIGH");
+    }
     digitalWrite(dev->reset_pin, !value);
 }
 
 // cppcheck-suppress unusedFunction
 void MX25xxxYY___enable_write_protect_pin(MX25xxxYY_t *dev, bool value)
 {
+    ArduinoMX25xxxYY *flash = nullptr;
+    if(dev->ctx != nullptr) {
+        flash = static_cast<ArduinoMX25xxxYY *>(dev->ctx);
+        flash->printf("Write Protect: Pin:%i, %s\r\n", dev->cs_pin, value ? "LOW" : "HIGH");
+    }
     digitalWrite(dev->wp_pin, !value);
 }

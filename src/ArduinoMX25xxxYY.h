@@ -27,30 +27,46 @@
 #include "SPI.h"
 #include "MX25xxxYY/MX25xxxYY.h"
 
+#ifndef ArduinoMX25xxxYY_DEBUG_UART_TYPE
+#define ArduinoMX25xxxYY_DEBUG_UART_TYPE UART
+#endif
+
 typedef uint64_t ArduinoMX25xxxYY_status;
+
 
 class ArduinoMX25xxxYY {
 private:
-    MX25xxxYY_t dev = {0};
+    MX25xxxYY_t dev = {};
     int manufacturer_id = 0;
     int memory_type = 0;
     int memory_density = 0;
-    unsigned long timeout = 5000;
+    ArduinoMX25xxxYY_DEBUG_UART_TYPE *debug_stream = nullptr;
 
-    ArduinoMX25xxxYY_status waitForWriteEnableBit(bool to_set);
-    ArduinoMX25xxxYY_status waitForWriteInProgressBit(bool to_set);
+    ArduinoMX25xxxYY_status waitForWriteEnableBit(bool to_set, uint32_t max_expected_time_us);
+    ArduinoMX25xxxYY_status waitForWriteInProgressBit(bool to_set, uint32_t max_expected_time_us);
 
 public:
 
 
-    bool begin(uint8_t cs_pin, uint8_t reset_pin, uint8_t wp_pin, SPIClass *spi);
+    /**
+     * begin initializes the ArduinoMX25xxxYY object. It configures the specified pins as OUTPUT and sets their values
+     * to the required defaults. It also reads the IDs from the flash chip and ensures that they match those in the
+     * specified chip_def.
+     * @param chip_def the populated MX25xxxYY_Chip_Info_t that matches the attached Flash Chip.
+     * @param cs_pin the pin to use for the CS signal
+     * @param reset_pin the pin to use for the RESET signal
+     * @param wp_pin the pin to use for the WP signal
+     * @param spi the SPI (object/bus) to use to communicate with the chip
+     * @return True if the chip IDs match those supplied by the chip_def
+     */
+    bool begin(MX25xxxYY_Chip_Info_t *chip_def, uint8_t cs_pin, uint8_t reset_pin, uint8_t wp_pin, SPIClass *spi);
 
     /**
-     * setTimeout sets the amount of time this library will wait for the WIL or the WIP bits to be set to the expected
-     * value before the function returns an error.
-     * @param _timeout The time in milli-seconds that this library will wait for an operation.
+     * setDebugStream sets the Stream like object that is used to print out debug messages.
+     * Example: flash.setDebugStream(&Serial);
+     * @param stream the stream to use to output the debug messages.
      */
-    void setTimeout(unsigned long _timeout);
+    void setDebugStream(ArduinoMX25xxxYY_DEBUG_UART_TYPE *stream);
 
     /**
      * readIdentities reads the IDs from the flash chip and stores the values for retrieval by getManufacturerId(),
@@ -110,6 +126,75 @@ public:
      * resetChip asserts the reset pin for 100 ms
      */
     void resetChip();
+
+    /**
+     * getChipName gets the name from the configured MX25xxxYY_Chip_Info_t.
+     * @return
+     */
+    const char* getChipName();
+
+    /**
+     * getChipDefinition return the pointer to the MX25xxxYY_Chip_Info_t supplied to the begin method.
+     * @return the pointer to the MX25xxxYY_Chip_Info_t supplied to the begin method.
+     */
+    const MX25xxxYY_Chip_Info_t* getChipDefinition();
+
+    /**
+     * printf passes through to the Stream set by the setDebugStream method
+     */
+    template<typename... Args>
+    int printf(const char * fmt, Args... args)
+    {
+        if(this->debug_stream != nullptr)
+        {
+            this->debug_stream->printf(fmt, args...);
+        }
+        return 0;
+    }
+
+    /**
+     * println passes through to the Stream set by the setDebugStream method
+     */
+    template<typename Value>
+    int println(const Value value)
+    {
+        if(this->debug_stream != nullptr)
+        {
+            this->debug_stream->println(value);
+        }
+        return 0;
+    }
+
+    /**
+     * print passes through to the Stream set by the setDebugStream method
+     */
+    template<typename Value>
+    int print(const Value value)
+    {
+        if(this->debug_stream != nullptr)
+        {
+            this->debug_stream->print(value);
+        }
+        return 0;
+    }
+
+    /**
+     * print passes through to the Stream set by the setDebugStream method
+     */
+    template<typename Value, typename V>
+    int print(const Value value, V type)
+    {
+        if(this->debug_stream != nullptr)
+        {
+            this->debug_stream->print(value, type);
+        }
+        return 0;
+    }
+
+    /**
+     * println passes through to the Stream set by the setDebugStream method
+     */
+    int println();
 
 };
 
