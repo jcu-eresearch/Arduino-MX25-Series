@@ -45,34 +45,50 @@ MX25Series_status_enum_t MX25Series___issue_command(MX25Series_t *dev, MX25Serie
         flash = static_cast<ArduinoMX25Series *>(dev->ctx);
         flash->printf("MX25Series_COMMAND: %02x:  ", command);
         flash->println();
+        flash->spi->transfer(command);
+        return MX25Series_status_ok;
+    }else
+    {
+        return MX25Series_status_error_ctx_nullptr;
     }
-
-    SPI.transfer(command);
+    
+    // Should never get here..
     return MX25Series_status_not_reported;
 }
 
 // cppcheck-suppress unusedFunction
 MX25Series_status_enum_t MX25Series___read(MX25Series_t *dev, size_t length, uint8_t* buffer)
 {
+
+    memset(buffer, 0, length);
     ArduinoMX25Series *flash = nullptr;
     if(dev->ctx != nullptr) {
         flash = static_cast<ArduinoMX25Series *>(dev->ctx);
-        flash->println();
-        flash->printf("SPI<< ");
+        // flash->println();
+        // flash->printf("SPI<< ");
+
+
+        flash->spi->transfer(buffer, length);
+        // for (size_t i = 0; i < length; i++)
+        // {
+        //     buffer[i] = flash->spi->transfer(dev->transfer_dummy_byte);
+        //     if (flash != nullptr){
+        //         flash->print(buffer[i], HEX);
+        //         flash->printf(", ");
+        //     }
+        // }
+        
+        if (flash != nullptr){
+            flash->println();
+        }
+        dev->state = 2;        
+        return MX25Series_status_ok;
+    }else
+    {
+        return MX25Series_status_error_ctx_nullptr;
     }
 
-    for (size_t i = 0; i < length; i++)
-    {
-        buffer[i] = SPI.transfer(dev->transfer_dummy_byte);
-        if (flash != nullptr){
-            flash->print(buffer[i], HEX);
-            flash->printf(", ");
-        }
-    }
-    if (flash != nullptr){
-        flash->println();
-    }
-    dev->state = 2;
+
     return MX25Series_status_not_reported;
 }
 
@@ -80,22 +96,29 @@ MX25Series_status_enum_t MX25Series___read(MX25Series_t *dev, size_t length, uin
 MX25Series_status_enum_t MX25Series___write(MX25Series_t *dev, size_t length, uint8_t* buffer)
 {
     ArduinoMX25Series *flash = nullptr;
+    uint8_t tmp[length];
+    memcpy(tmp, buffer, length);
     if(dev->ctx != nullptr) {
         flash = static_cast<ArduinoMX25Series *>(dev->ctx);
-        flash->println();
-        flash->printf("SPI>> ");
+        // flash->println();
+        // flash->printf("SPI>> ");
+        flash->spi->transfer(buffer, length);
+        // for (size_t i = 0; i < length; i++)
+        // {
+        //     flash->spi->transfer(buffer[i]);
+        //     if (flash != nullptr){
+        //         flash->print(buffer[i], HEX);
+        //         flash->printf(", ");
+        //     }
+        // }
+        if (flash != nullptr){flash->println();}
+        dev->state = 3;
+        return MX25Series_status_ok;
+    }else
+    {
+        return MX25Series_status_error_ctx_nullptr;
     }
 
-    for (size_t i = 0; i < length; i++)
-    {
-        SPI.transfer(buffer[i]);
-        if (flash != nullptr){
-            flash->print(buffer[i], HEX);
-            flash->printf(", ");
-        }
-    }
-    if (flash != nullptr){flash->println();}
-    dev->state = 3;
     return MX25Series_status_not_reported;
 }
 

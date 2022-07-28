@@ -35,12 +35,16 @@ typedef uint64_t ArduinoMX25Series_status;
 
 
 class ArduinoMX25Series {
+    friend MX25Series_status_enum_t MX25Series___issue_command(MX25Series_t *dev, MX25Series_COMMAND_enum_t command);
+    friend MX25Series_status_enum_t MX25Series___read(MX25Series_t *dev, size_t length, uint8_t* buffer);
+    friend MX25Series_status_enum_t MX25Series___write(MX25Series_t *dev, size_t length, uint8_t* buffer);
 private:
     MX25Series_t dev = {};
     int manufacturer_id = 0;
     int memory_type = 0;
     int memory_density = 0;
     ArduinoMX25Series_DEBUG_UART_TYPE *debug_stream = nullptr;
+    SPIClass *spi = nullptr;
 
     ArduinoMX25Series_status waitForWriteEnableBit(bool to_set, uint32_t max_expected_time_us);
     ArduinoMX25Series_status waitForWriteInProgressBit(bool to_set, uint32_t max_expected_time_us);
@@ -93,6 +97,12 @@ public:
      * @return The Memory Density for the chip
      */
     int getMemoryDensity() const;
+
+    /**
+     * getMemorySize returns the Memory Size from the chip definition.
+     * 
+     */
+    uint32_t getMemorySize() const;
 
     /**
      * readFlashMemory reads data stored in the flash chip.

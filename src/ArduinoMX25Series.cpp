@@ -40,8 +40,8 @@ bool ArduinoMX25Series::begin(MX25Series_Chip_Info_t *chip_def, uint8_t cs_pin, 
     digitalWrite(reset_pin, HIGH);
     pinMode(wp_pin, OUTPUT);
     digitalWrite(wp_pin, HIGH);
-
-    spi->begin(); // Call in case SPI.begin hasn't been called
+    this->spi = spi;
+    this->spi->begin(); // Call in case SPI.begin hasn't been called
     MX25Series_init(&this->dev, chip_def, cs_pin, reset_pin, wp_pin, 0x00, this);
     readIdentities();
     this->printf("Device State: %i\r\n", dev.state);
@@ -75,6 +75,11 @@ int ArduinoMX25Series::getMemoryType() const {
 
 int ArduinoMX25Series::getMemoryDensity() const {
     return memory_density;
+}
+
+uint32_t ArduinoMX25Series::getMemorySize() const
+{
+    return dev.chip_def->memory_size;
 }
 
 ArduinoMX25Series_status ArduinoMX25Series::readFlashMemory(uint32_t memory_address, size_t length, uint8_t *buffer, bool fast_mode) {
