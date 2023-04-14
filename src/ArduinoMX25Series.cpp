@@ -31,9 +31,9 @@ bool ArduinoMX25Series::begin(MX25Series_Chip_Info_t *chip_def, uint8_t cs_pin, 
         return false;
     }
     //Configure The Pins
-    this->printf("CS Pin: %i\r\n", cs_pin);
-    this->printf("RESET Pin: %i\r\n", reset_pin);
-    this->printf("WP Pin: %i\r\n", wp_pin);
+    // this->printf("CS Pin: %i\r\n", cs_pin);
+    // this->printf("RESET Pin: %i\r\n", reset_pin);
+    // this->printf("WP Pin: %i\r\n", wp_pin);
     pinMode(cs_pin, OUTPUT);
     digitalWrite(cs_pin, HIGH);
     pinMode(reset_pin, OUTPUT);
@@ -189,7 +189,8 @@ ArduinoMX25Series_status ArduinoMX25Series::waitForWriteInProgressBit(bool to_se
     uint32_t adjusted_max_time = (uint32_t)(((double)max_expected_time_us) * 1.5);
     do
     {
-        if((micros() - start) > (adjusted_max_time))
+        unsigned long delta = micros() - start;
+        if(delta > adjusted_max_time)
         {
             MX25Series_read_status_register(&this->dev, &status_reg);
             if(MX25Series_SR_WIP_GET_VALUE(status_reg) != to_set) {
