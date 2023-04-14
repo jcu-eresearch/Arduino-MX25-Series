@@ -43,8 +43,6 @@ MX25Series_status_enum_t MX25Series___issue_command(MX25Series_t *dev, MX25Serie
     ArduinoMX25Series *flash = nullptr;
     if(dev->ctx != nullptr) {
         flash = static_cast<ArduinoMX25Series *>(dev->ctx);
-        flash->printf("MX25Series_COMMAND: %02x:  ", command);
-        flash->println();
         flash->spi->transfer(command);
         return MX25Series_status_ok;
     }else
@@ -64,23 +62,7 @@ MX25Series_status_enum_t MX25Series___read(MX25Series_t *dev, size_t length, uin
     ArduinoMX25Series *flash = nullptr;
     if(dev->ctx != nullptr) {
         flash = static_cast<ArduinoMX25Series *>(dev->ctx);
-        // flash->println();
-        // flash->printf("SPI<< ");
-
-
         flash->spi->transfer(buffer, length);
-        // for (size_t i = 0; i < length; i++)
-        // {
-        //     buffer[i] = flash->spi->transfer(dev->transfer_dummy_byte);
-        //     if (flash != nullptr){
-        //         flash->print(buffer[i], HEX);
-        //         flash->printf(", ");
-        //     }
-        // }
-        
-        if (flash != nullptr){
-            flash->println();
-        }
         dev->state = 2;        
         return MX25Series_status_ok;
     }else
@@ -96,22 +78,12 @@ MX25Series_status_enum_t MX25Series___read(MX25Series_t *dev, size_t length, uin
 MX25Series_status_enum_t MX25Series___write(MX25Series_t *dev, size_t length, uint8_t* buffer)
 {
     ArduinoMX25Series *flash = nullptr;
+    //Copy data to temporary copy of the data so that buffer does not get overwritten.
     uint8_t tmp[length];
     memcpy(tmp, buffer, length);
     if(dev->ctx != nullptr) {
         flash = static_cast<ArduinoMX25Series *>(dev->ctx);
-        // flash->println();
-        // flash->printf("SPI>> ");
-        flash->spi->transfer(buffer, length);
-        // for (size_t i = 0; i < length; i++)
-        // {
-        //     flash->spi->transfer(buffer[i]);
-        //     if (flash != nullptr){
-        //         flash->print(buffer[i], HEX);
-        //         flash->printf(", ");
-        //     }
-        // }
-        if (flash != nullptr){flash->println();}
+        flash->spi->transfer(tmp, length);
         dev->state = 3;
         return MX25Series_status_ok;
     }else
@@ -128,7 +100,6 @@ void MX25Series___enable_cs_pin(MX25Series_t *dev, bool value)
     ArduinoMX25Series *flash = nullptr;
     if(dev->ctx != nullptr) {
         flash = static_cast<ArduinoMX25Series *>(dev->ctx);
-        flash->printf("CS: Pin:%i, %s\r\n", dev->cs_pin, value ? "LOW" : "HIGH");
     }
     digitalWrite(dev->cs_pin, !value);
 }
@@ -139,7 +110,6 @@ void MX25Series___enable_reset_pin(MX25Series_t *dev, bool value)
     ArduinoMX25Series *flash = nullptr;
     if(dev->ctx != nullptr) {
         flash = static_cast<ArduinoMX25Series *>(dev->ctx);
-        flash->printf("Reset: Pin:%i, %s\r\n", dev->cs_pin, value ? "LOW" : "HIGH");
     }
     digitalWrite(dev->reset_pin, !value);
 }
@@ -150,7 +120,7 @@ void MX25Series___enable_write_protect_pin(MX25Series_t *dev, bool value)
     ArduinoMX25Series *flash = nullptr;
     if(dev->ctx != nullptr) {
         flash = static_cast<ArduinoMX25Series *>(dev->ctx);
-        flash->printf("Write Protect: Pin:%i, %s\r\n", dev->cs_pin, value ? "LOW" : "HIGH");
+        // flash->printf("Write Protect: Pin:%i, %s\r\n", dev->cs_pin, value ? "LOW" : "HIGH");
     }
     digitalWrite(dev->wp_pin, !value);
 }
