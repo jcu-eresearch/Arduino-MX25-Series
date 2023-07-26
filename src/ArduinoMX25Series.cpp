@@ -108,7 +108,7 @@ ArduinoMX25Series_status ArduinoMX25Series::writeFlashMemory(uint32_t memory_add
     if(block)
     {
         this->println("Waiting for WIP to be false");
-        ArduinoMX25Series_status wip_wait_status = waitForWriteInProgressBit(false, dev.chip_def->timing.tBP);
+        ArduinoMX25Series_status wip_wait_status = waitForWriteInProgressBit(false, dev.chip_def->timing.tBP * length);
         status |= wip_wait_status;
         this->println(wait_status);
     }
